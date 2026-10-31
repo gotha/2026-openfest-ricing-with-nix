@@ -1,5 +1,5 @@
 {
-  description = "Standalone Home Manager configuration for cowsay, Neovim, and Kitty with Iosevka Nerd Font on Linux and macOS";
+  description = "Standalone Home Manager configuration for cowsay, Neovim, and Alacritty with Iosevka Nerd Font on Linux and macOS";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-26.05";
@@ -43,6 +43,7 @@
               packages = [
                 pkgs.cowsay
                 pkgs.neovim
+                pkgs.nerd-fonts.iosevka
               ];
               # Keep this value when updating inputs on an existing installation.
               stateVersion = "26.05";
@@ -62,13 +63,12 @@
               };
             };
 
-            programs.kitty = {
+            programs.alacritty = {
               enable = true;
-              package = config.lib.nixGL.wrap pkgs.kitty;
-              font = {
-                package = pkgs.nerd-fonts.iosevka;
-                name = "Iosevka Nerd Font Mono";
-                size = 12;
+              package = config.lib.nixGL.wrap pkgs.alacritty;
+              settings.font = {
+                normal.family = "Iosevka Nerd Font Mono";
+                size = 12.0;
               };
             };
           })
