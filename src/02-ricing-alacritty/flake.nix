@@ -66,9 +66,55 @@
             programs.alacritty = {
               enable = true;
               package = config.lib.nixGL.wrap pkgs.alacritty;
-              settings.font = {
-                normal.family = "Iosevka Nerd Font Mono";
-                size = 12.0;
+              settings = {
+                font = {
+                  normal.family = "Iosevka Nerd Font Mono";
+                  size = 12.0;
+                };
+
+                window = {
+                  padding = { x = 12; y = 12; };
+                  opacity = 1.0;
+                  decorations_theme_variant = "Dark";
+                };
+
+                colors = {
+                  primary = {
+                    background = "#161b22";
+                    foreground = "#e6edf3";
+                    dim_foreground = "#9da7b3";
+                    bright_foreground = "#ffffff";
+                  };
+                  cursor = {
+                    text = "#161b22";
+                    cursor = "#79c0ff";
+                  };
+                  selection = {
+                    text = "#ffffff";
+                    background = "#264f78";
+                  };
+                  normal = {
+                    # Keep ANSI black text readable against the dark background.
+                    black = "#8b949e";
+                    red = "#ff7b72";
+                    green = "#7ee787";
+                    yellow = "#e3b341";
+                    blue = "#79c0ff";
+                    magenta = "#d2a8ff";
+                    cyan = "#76e3ea";
+                    white = "#e6edf3";
+                  };
+                  bright = {
+                    black = "#9da7b3";
+                    red = "#ffa198";
+                    green = "#aff5b4";
+                    yellow = "#f8e3a1";
+                    blue = "#a5d6ff";
+                    magenta = "#e2c5ff";
+                    cyan = "#b3f0ff";
+                    white = "#ffffff";
+                  };
+                };
               };
             };
           })
