@@ -7,10 +7,14 @@
       url = "github:nix-community/home-manager/release-26.05";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    nixgl = {
+      url = "github:nix-community/nixGL";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
-    { nixpkgs, home-manager, ... }:
+    { nixpkgs, home-manager, nixgl, ... }:
     let
       systems = [
         "x86_64-linux"
@@ -32,7 +36,7 @@
         pkgs = nixpkgs.legacyPackages.${builtins.currentSystem};
 
         modules = [
-          ({ pkgs, ... }: {
+          ({ config, lib, pkgs, ... }: {
             home = {
               username = builtins.getEnv "USER";
               homeDirectory = builtins.getEnv "HOME";
@@ -49,8 +53,18 @@
             # Let Linux applications discover fonts installed in the user profile.
             fonts.fontconfig.enable = pkgs.stdenv.hostPlatform.isLinux;
 
+            # Supply Mesa drivers for Nix GUI applications on Debian and other distros.
+            targets.genericLinux = lib.mkIf pkgs.stdenv.hostPlatform.isLinux {
+              enable = true;
+              nixGL = {
+                packages = nixgl.packages;
+                defaultWrapper = "mesa";
+              };
+            };
+
             programs.kitty = {
               enable = true;
+              package = config.lib.nixGL.wrap pkgs.kitty;
               font = {
                 package = pkgs.nerd-fonts.iosevka;
                 name = "Iosevka Nerd Font Mono";
