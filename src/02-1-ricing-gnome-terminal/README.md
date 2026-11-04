@@ -8,13 +8,15 @@ The window theme is dark, with light text, a blue cursor, and contrasting select
 colors. ANSI black is set to gray so programs that request black text stay readable.
 Font discovery is enabled through fontconfig.
 
-Home Manager applies the profile through dconf. The profile opens a login shell so
-new terminal windows load your login environment, including Nix's shell setup.
+Home Manager applies the profile through dconf. The profile uses a normal
+interactive shell and inherits the desktop session's environment. On Debian,
+forcing a login shell resets `PATH` while Nix's inherited initialization flag
+can prevent its profile script from restoring the Nix paths.
 
 From the repository root, activate as your regular user in the Linux desktop session:
 
 ```sh
-cd src/02-ricing-gnome-terminal
+cd src/02-1-ricing-gnome-terminal
 nix run . -- switch --flake .#default --impure
 ```
 
@@ -26,7 +28,7 @@ home-manager switch --flake .#default --impure
 
 The flake detects the current architecture, username, and home directory, which
 requires `--impure`. It supports `x86_64-linux` and `aarch64-linux`, and uses the same
-pinned Nixpkgs and Home Manager revisions as `02-ricing-tmux`.
+pinned Nixpkgs and Home Manager revisions as `02-2-ricing-tmux`.
 
 After activation, open a new GNOME Terminal window from the desktop application
 menu or run `gnome-terminal` from a terminal in the graphical session.

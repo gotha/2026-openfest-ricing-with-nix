@@ -55,7 +55,6 @@
                 default = true;
                 visibleName = "Ricing";
                 font = "Iosevka Nerd Font Mono 12";
-                loginShell = true;
                 audibleBell = false;
 
                 colors = {
