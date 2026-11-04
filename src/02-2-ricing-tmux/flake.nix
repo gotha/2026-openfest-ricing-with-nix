@@ -1,5 +1,5 @@
 {
-  description = "Standalone Home Manager configuration for cowsay, Neovim, and tmux on Linux and macOS";
+  description = "Standalone Home Manager configuration for cowsay, Neovim, tmux, and Zsh on Linux and macOS";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-26.05";
@@ -33,7 +33,10 @@
 
         modules = [
           ({ pkgs, ... }: {
-            imports = [ ./home/tmux ];
+            imports = [
+              ./home/tmux
+              ./home/zsh
+            ];
 
             home = {
               username = builtins.getEnv "USER";
