@@ -12,38 +12,28 @@ Activate from the repository root:
 
 ```sh
 cd src/02-2-ricing-tmux
-nix run . -- switch --flake .#default --impure
+nix run . -- switch --flake .#default --impure -b before-home-manager
 ```
 
-The `home/zsh` module installs Zsh and manages `~/.zshenv` and `~/.zshrc`.
-Home Manager loads its session variables through `.zshenv`. The `.zshrc` sources
-the installed Nix profile script for multi-user or single-user installations.
-For multi-user Nix, it clears the inherited `__ETC_PROFILE_NIX_SOURCED` flag first
-so Nix restores its paths even if a system startup file reset `PATH`.
+The `home/bash` module configures Bash and manages `~/.bash_profile`, `~/.profile`,
+and `~/.bashrc`. The backup flag keeps existing unmanaged files with a
+`.before-home-manager` suffix when Home Manager takes over these files.
 
-If existing unmanaged Zsh files block activation, keep backups with
-`nix run . -- switch --flake .#default --impure -b before-home-manager`.
+Home Manager loads its session variables through `.profile`, and `.bash_profile`
+loads `.profile` and `.bashrc`. Interactive Bash shells source the installed Nix
+profile script from `.bashrc`, for both multi-user and single-user installations.
+For multi-user Nix, the configuration clears the inherited
+`__ETC_PROFILE_NIX_SOURCED` flag first so Nix restores its paths even if Debian's
+system profile reset `PATH`.
 
-Start the configured shell in the current terminal:
+Keep Bash as the account's login shell. If you already changed it to Zsh, run
+`chsh -s /bin/bash` before applying this configuration, then log out and back in.
+Home Manager does not change the account's login shell, and tmux uses its normal
+shell selection from `$SHELL` or the account's login shell.
 
-```sh
-exec "$HOME/.nix-profile/bin/zsh" -l
-```
-
-Home Manager does not change the account's login shell. To use this Zsh for
-future Debian logins, register its stable profile path and select it once:
-
-```sh
-grep -qxF "$HOME/.nix-profile/bin/zsh" /etc/shells ||
-  printf '%s\n' "$HOME/.nix-profile/bin/zsh" | sudo tee -a /etc/shells
-chsh -s "$HOME/.nix-profile/bin/zsh"
-```
-
-Log out and back in after changing the login shell.
-
-tmux uses its normal shell selection from `$SHELL` or the account's login shell.
-Start a fresh tmux server after changing the login shell; existing servers keep
-their previous shell setting.
+After applying, open a new terminal or run `exec /bin/bash -l` in the current
+terminal to load the managed configuration. Existing tmux panes can run the same
+command. Start a fresh tmux server after changing the account's login shell.
 
 Start tmux with `tmux`. The prefix is `Ctrl+Space`. Mouse support and vi copy mode
 are enabled, and window numbering starts at 1.

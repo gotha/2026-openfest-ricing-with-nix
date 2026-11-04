@@ -1,5 +1,5 @@
 {
-  description = "Standalone Home Manager configuration for cowsay, Neovim, tmux, and Zsh on Linux and macOS";
+  description = "Standalone Home Manager configuration for cowsay, Neovim, tmux, and Bash on Linux and macOS";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-26.05";
@@ -26,7 +26,7 @@
       });
 
       # With Nix and flakes enabled, run from this directory as your regular user:
-      # nix run . -- switch --flake .#default --impure
+      # nix run . -- switch --flake .#default --impure -b before-home-manager
       # --impure allows detecting the current system, USER, and HOME.
       homeConfigurations.default = home-manager.lib.homeManagerConfiguration {
         pkgs = nixpkgs.legacyPackages.${builtins.currentSystem};
@@ -35,7 +35,7 @@
           ({ pkgs, ... }: {
             imports = [
               ./home/tmux
-              ./home/zsh
+              ./home/bash
             ];
 
             home = {
