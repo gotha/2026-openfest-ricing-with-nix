@@ -18,7 +18,7 @@ os/nixos/default.nix        Extends the installed NixOS configuration
 From the repository root:
 
 ```sh
-cd src/02-5-ricing-multiarch
+cd src/02-5-os-configurations
 ```
 
 | System | Flake output | Rebuild tool |
@@ -46,6 +46,12 @@ accounts and Nix installation, with `services.userborn.enable = false` and
 `/home/<username>`. Adjust `os/debian/default.nix` for a different home directory.
 Log out and back in after the first switch so the desktop and terminals pick up
 the per-user package path at `/etc/profiles/per-user/<username>/bin`.
+
+On Debian GNOME, Home Manager maps Caps Lock to Escape and enables fast key
+repeat with a 210 ms initial delay and a 15 ms repeat interval. `Alt+Space`
+selects the previous keyboard layout, matching `Option+Space` on macOS. Its
+conflicting window-menu shortcut is disabled. These are GNOME desktop settings;
+the macOS-specific tilde remapping is omitted.
 
 On an installed NixOS system, activate with the explicitly named rebuild tool:
 
