@@ -133,6 +133,44 @@
         {
           home = home.activationPackage;
           helpers = self.packages.${system}.nixarchy;
+          session-startup = pkgs.runCommand "nixarchy-session-startup" { } ''
+            export HOME="$TMPDIR/home"
+            mkdir -p "$HOME/.nix-profile/bin" "$HOME/.nix-profile/etc/profile.d"
+            cat > "$HOME/.nix-profile/bin/uwsm" <<'EOF'
+            #!${pkgs.runtimeShell}
+            set -eu
+            test "$XCURSOR_THEME" = Bibata-Modern-Ice
+            test "$XCURSOR_PATH" = "$EXPECTED_CURSOR_PATH"
+            test "$XDG_CURRENT_DESKTOP" = Hyprland
+            test "$XDG_SESSION_TYPE" = wayland
+            test "$*" = 'start -F -D Hyprland -- start-hyprland'
+            touch "$SESSION_STARTED"
+            EOF
+            chmod +x "$HOME/.nix-profile/bin/uwsm"
+
+            for profile in ${home.config.home.sessionVariablesPackage} ${debianHome.home.sessionVariablesPackage}; do
+              ln -sf "$profile/etc/profile.d/hm-session-vars.sh" \
+                "$HOME/.nix-profile/etc/profile.d/hm-session-vars.sh"
+              for cursor in unset /existing/icons; do
+                rm -f session-started
+                cursorEnv=()
+                cursorSuffix=""
+                if test "$cursor" != unset; then
+                  cursorEnv=("XCURSOR_PATH=$cursor")
+                  cursorSuffix=":$cursor"
+                fi
+                cursorPrefix=$(sed -n 's/^export XCURSOR_PATH="\([^$]*\)\$.*/\1/p' \
+                  "$profile/etc/profile.d/hm-session-vars.sh")
+                test -n "$cursorPrefix"
+                env -i HOME="$HOME" USER=nixarchy-test PATH="$PATH" \
+                  SESSION_STARTED="$PWD/session-started" \
+                  EXPECTED_CURSOR_PATH="$cursorPrefix$cursorSuffix" "''${cursorEnv[@]}" \
+                  ${self.packages.${system}.nixarchy}/bin/nixarchy-session
+                test -f session-started
+              done
+            done
+            touch "$out"
+          '';
           debian-session =
             pkgs.runCommand "nixarchy-debian-session"
               {
