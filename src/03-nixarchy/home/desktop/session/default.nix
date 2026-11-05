@@ -12,6 +12,8 @@ let
   '';
 in
 {
+  systemd.user.packages = lib.optionals (backend == "system-manager") [ pkgs.uwsm ];
+
   services.mako = {
     enable = true;
     settings = {

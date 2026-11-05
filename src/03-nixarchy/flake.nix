@@ -127,10 +127,44 @@
               }
             ];
           };
+          debian = self.systemConfigs.${system}.config;
+          debianHome = debian.home-manager.users.${username};
         in
         {
           home = home.activationPackage;
           helpers = self.packages.${system}.nixarchy;
+          debian-session =
+            pkgs.runCommand "nixarchy-debian-session"
+              {
+                nativeBuildInputs = [
+                  pkgs.dbus
+                  pkgs.dconf
+                ];
+              }
+              ''
+                for unit in wayland-session-bindpid@.service wayland-wm@.service wayland-wm-env@.service wayland-session@.target; do
+                  test -r ${debianHome.xdg.dataFile."systemd/user".source}/"$unit"
+                done
+
+                export HOME="$TMPDIR/home"
+                export XDG_CONFIG_HOME="$HOME/.config"
+                mkdir -p "$XDG_CONFIG_HOME"
+                config=${debian.environment.etc."dbus-1/session.conf".source}
+                # Debian's standard configuration also includes the legacy /etc file.
+                sed "s|/etc/dbus-1/session.conf|$config|" \
+                  ${pkgs.dbus}/share/dbus-1/session.conf > debian-session.conf
+                for config in "$config" "$PWD/debian-session.conf"; do
+                  dbus-daemon --config-file="$config" --fork --print-address=3 --print-pid=4 \
+                    3>bus-address 4>bus-pid
+                  trap 'kill "$(cat bus-pid)"' EXIT
+                  export DBUS_SESSION_BUS_ADDRESS="$(cat bus-address)"
+                  dconf write /nixarchy-check/value "'ready'"
+                  test "$(dconf read /nixarchy-check/value)" = "'ready'"
+                  kill "$(cat bus-pid)"
+                  trap - EXIT
+                done
+                touch "$out"
+              '';
           system-manager-etc =
             pkgs.runCommand "nixarchy-system-manager-etc" { nativeBuildInputs = [ pkgs.findutils ]; }
               ''

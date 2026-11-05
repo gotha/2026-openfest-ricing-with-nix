@@ -5,13 +5,16 @@ fi
 
 # Display managers need the same paths as a login shell. UWSM passes these to
 # the compositor and its graphical-session services.
-export PATH="/run/wrappers/bin:/etc/profiles/per-user/$USER/bin:/run/system-manager/sw/bin:/run/current-system/sw/bin:$PATH"
-export XDG_DATA_DIRS="/etc/profiles/per-user/$USER/share:/run/system-manager/sw/share:/run/current-system/sw/share:${XDG_DATA_DIRS:-/usr/local/share:/usr/share}"
-profile="/etc/profiles/per-user/$USER/etc/profile.d/hm-session-vars.sh"
-if [[ -r $profile ]]; then
-  # shellcheck source=/dev/null
-  source "$profile"
-fi
+stateProfile="${XDG_STATE_HOME:-$HOME/.local/state}/nix/profile"
+export PATH="/run/wrappers/bin:$HOME/.nix-profile/bin:$stateProfile/bin:/etc/profiles/per-user/$USER/bin:/run/system-manager/sw/bin:/run/current-system/sw/bin:$PATH"
+export XDG_DATA_DIRS="$HOME/.nix-profile/share:$stateProfile/share:/etc/profiles/per-user/$USER/share:/run/system-manager/sw/share:/run/current-system/sw/share:${XDG_DATA_DIRS:-/usr/local/share:/usr/share}"
+for profile in "$HOME/.nix-profile" "$stateProfile" "/etc/profiles/per-user/$USER"; do
+  if [[ -r "$profile/etc/profile.d/hm-session-vars.sh" ]]; then
+    # shellcheck source=/dev/null
+    source "$profile/etc/profile.d/hm-session-vars.sh"
+    break
+  fi
+done
 export XDG_CURRENT_DESKTOP=Hyprland
 export XDG_SESSION_DESKTOP=Hyprland
 export XDG_SESSION_TYPE=wayland

@@ -7,6 +7,7 @@
   ...
 }:
 let
+  sessionBusConfig = pkgs.makeDBusConf.override { serviceDirectories = [ pkgs.dconf ]; };
   desktop = pkgs.writeText "nixarchy.desktop" ''
     [Desktop Entry]
     Name=Nixarchy
@@ -31,12 +32,12 @@ in
   system-graphics.package = pkgs.mesa;
   environment.systemPackages = [ pkgs.uwsm ];
   environment.etc."nixarchy/session.desktop".source = desktop;
+  # Home Manager starts a private Nix-built session bus during boot activation.
+  environment.etc."dbus-1/session.conf".source = "${sessionBusConfig}/session.conf";
   # A unique session entry leaves Debian's existing login sessions intact.
   systemd.tmpfiles.rules = [
     "L+ /usr/share/wayland-sessions/nixarchy.desktop - - - - ${desktop}"
   ];
-  systemd.packages = [ pkgs.uwsm ];
-
   # Use the same local-password PAM modules and helper as NixOS. Absolute paths
   # avoid loading Debian's PAM modules into the Nix-built lock screen.
   environment.etc."pam.d/hyprlock".text = lib.mkDefault ''
@@ -49,6 +50,9 @@ in
     group = "root";
     setuid = true;
   };
+  # The upstream wrapper unit references userborn even when it is disabled.
+  # Debian already provides the root account used by this wrapper.
+  systemd.services.suid-sgid-wrappers.unitConfig.After = lib.mkForce "run-wrappers.mount";
   system-manager.preActivationAssertions.debianDesktop = {
     enable = true;
     script = ''

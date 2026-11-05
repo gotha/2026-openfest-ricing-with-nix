@@ -89,6 +89,8 @@ System-manager activates Home Manager and adds a **Nixarchy** entry to
 `/usr/share/wayland-sessions`. Home Manager installs the desktop packages in its
 own user profile. This avoids system-manager traversing icon-theme packages
 under `/etc/profiles/per-user`, where dangling icon symlinks can stop activation.
+It also registers UWSM's user units through Home Manager and provides the session
+bus configuration needed for activation before anyone has logged in.
 Log out fully, then select that session.
 You can also run `nixarchy-session` from a local TTY. Avoid starting it inside an
 existing GNOME session or over SSH. Log out and back in after the first switch to
@@ -195,6 +197,7 @@ nix build .#checks.aarch64-linux.home --impure --no-link
 nix build .#checks.aarch64-linux.desktop-config --impure --no-link
 nix build .#checks.aarch64-linux.helper-behavior --impure --no-link
 nix build .#checks.aarch64-linux.system-manager-etc --impure --no-link
+nix build .#checks.aarch64-linux.debian-session --impure --no-link
 systemctl --user --failed
 journalctl --user -u waybar -u walker -u elephant -u hypridle -b
 ```
@@ -206,6 +209,8 @@ Foot's parser, and headless Neovim. The helper check uses mocked desktop tools t
 test cancellation, clipboard handling, recording control, and power confirmation.
 The system-manager check rejects dangling symlinks in the generated `/etc` tree
 before activation.
+The Debian session check verifies UWSM's user units and tests dconf writes through
+the private activation bus and Debian's combined session-bus configuration.
 
 Graphical login, lock/unlock, suspend, audio, screen sharing, and VM GPU behavior
 still need testing on the target machine. No rebuild test can prove those from
