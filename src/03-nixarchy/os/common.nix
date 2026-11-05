@@ -20,7 +20,7 @@
     ];
     home-manager = {
       useGlobalPkgs = true;
-      useUserPackages = true;
+      useUserPackages = lib.mkDefault true;
       backupFileExtension = "before-nixarchy";
       extraSpecialArgs.bluetooth = config.nixarchy.bluetooth.enable;
       users.${username} = import ../home;

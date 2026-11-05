@@ -131,6 +131,18 @@
         {
           home = home.activationPackage;
           helpers = self.packages.${system}.nixarchy;
+          system-manager-etc =
+            pkgs.runCommand "nixarchy-system-manager-etc" { nativeBuildInputs = [ pkgs.findutils ]; }
+              ''
+                find -L ${self.systemConfigs.${system}.config.build.etc.staticEnv} \
+                  -type l -print > dangling-links
+                if test -s dangling-links; then
+                  echo 'System-manager cannot activate these dangling symlinks:'
+                  cat dangling-links
+                  exit 1
+                fi
+                touch "$out"
+              '';
           helper-behavior =
             pkgs.runCommand "nixarchy-helper-behavior"
               {

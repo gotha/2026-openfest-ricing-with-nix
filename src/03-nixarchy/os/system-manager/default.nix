@@ -19,6 +19,9 @@ in
 {
   nix.enable = false;
   services.userborn.enable = false;
+  # System-manager recursively resolves /etc entries, including dangling icon links.
+  # Install desktop packages in Home Manager's own profile instead.
+  home-manager.useUserPackages = false;
   home-manager.extraSpecialArgs.backend = "system-manager";
   users.users.${username} = {
     isNormalUser = true;
