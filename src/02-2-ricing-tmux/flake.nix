@@ -35,7 +35,6 @@
           ({ pkgs, ... }: {
             imports = [
               ./home/tmux
-              ./home/bash
             ];
 
             home = {
