@@ -133,6 +133,7 @@
         {
           home = home.activationPackage;
           helpers = self.packages.${system}.nixarchy;
+          waybar = home.config.programs.waybar.package;
           session-startup = pkgs.runCommand "nixarchy-session-startup" { } ''
             export HOME="$TMPDIR/home"
             mkdir -p "$HOME/.nix-profile/bin" "$HOME/.nix-profile/etc/profile.d"

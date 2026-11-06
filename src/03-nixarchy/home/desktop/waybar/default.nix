@@ -1,10 +1,21 @@
-{ ... }:
+{ pkgs, ... }:
 let
   t = import ../../theme/palette.nix;
 in
 {
   programs.waybar = {
     enable = true;
+    # Waybar 0.15 predates Hyprland's Lua dispatch protocol.
+    package = pkgs.waybar.overrideAttrs (old: {
+      patches = (old.patches or [ ]) ++ [
+        (pkgs.fetchpatch {
+          url = "https://github.com/Alexays/Waybar/commit/e17c0d9f0a73acc370df60ec8c532b1ed2385c73.patch";
+          # The scrolling code in this patch was added after the pinned release.
+          excludes = [ "src/modules/hyprland/workspaces.cpp" ];
+          hash = "sha256-QsPcxs6B8YPIPE3IzBuxER+12Ur+3JoshouDm/3T3xE=";
+        })
+      ];
+    });
     systemd.enable = true;
     settings.mainBar = {
       layer = "top";
@@ -32,7 +43,6 @@ in
       };
       "hyprland/workspaces" = {
         format = "{name}";
-        on-click = "activate";
         persistent-workspaces."*" = [
           1
           2

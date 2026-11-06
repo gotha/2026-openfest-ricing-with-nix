@@ -25,6 +25,10 @@ UWSM owns the graphical session. Home Manager starts the desktop services once
 and stops them with that session. Cliphist owns clipboard history; Elephant is
 built with only application, runner, file, and calculator providers.
 
+The pinned Waybar 0.15 package includes the upstream Lua dispatch fix from
+[Waybar PR #5013](https://github.com/Alexays/Waybar/pull/5013), so clicking workspace
+buttons works with Hyprland 0.55's Lua configuration.
+
 The Quickshell port, extra office/media applications, OCR, and other items listed
 under "Later additions" in the plan remain optional future work.
 
@@ -199,6 +203,7 @@ nix build .#checks.aarch64-linux.home --impure --no-link
 nix build .#checks.aarch64-linux.desktop-config --impure --no-link
 nix build .#checks.aarch64-linux.helper-behavior --impure --no-link
 nix build .#checks.aarch64-linux.session-startup --impure --no-link
+nix build .#checks.aarch64-linux.waybar --impure --no-link
 nix build .#checks.aarch64-linux.system-manager-etc --impure --no-link
 nix build .#checks.aarch64-linux.debian-session --impure --no-link
 systemctl --user --failed
