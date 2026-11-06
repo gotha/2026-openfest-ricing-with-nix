@@ -91,6 +91,8 @@ own user profile. This avoids system-manager traversing icon-theme packages
 under `/etc/profiles/per-user`, where dangling icon symlinks can stop activation.
 It also registers UWSM's user units through Home Manager and provides the session
 bus configuration needed for activation before anyone has logged in.
+The session launcher keeps `/usr/local/share` and `/usr/share` in `XDG_DATA_DIRS`
+so Debian's services can find their GSettings schemas and other desktop data.
 Log out fully, then select that session.
 You can also run `nixarchy-session` from a local TTY. Avoid starting it inside an
 existing GNOME session or over SSH. Log out and back in after the first switch to
@@ -209,7 +211,8 @@ at a test host file. The desktop configuration check runs Hyprland's verifier,
 Foot's parser, and headless Neovim. The helper check uses mocked desktop tools to
 test cancellation, clipboard handling, recording control, and power confirmation.
 The session startup check loads the generated Home Manager profiles with unset
-and existing cursor paths, then verifies the launcher reaches UWSM.
+and existing cursor and data paths. It verifies the launcher reaches UWSM and
+retains both the host's data directories and any inherited directories.
 The system-manager check rejects dangling symlinks in the generated `/etc` tree
 before activation.
 The Debian session check verifies UWSM's user units and tests dconf writes through

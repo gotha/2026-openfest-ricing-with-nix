@@ -143,6 +143,12 @@
             test "$XCURSOR_PATH" = "$EXPECTED_CURSOR_PATH"
             test "$XDG_CURRENT_DESKTOP" = Hyprland
             test "$XDG_SESSION_TYPE" = wayland
+            for directory in /usr/local/share /usr/share "$HOME/.nix-profile/share" "$EXPECTED_DATA_DIR"; do
+              case ":$XDG_DATA_DIRS:" in
+                *":$directory:"*) ;;
+                *) echo "Missing session data directory: $directory" >&2; exit 1 ;;
+              esac
+            done
             test "$*" = 'start -F -D Hyprland -- start-hyprland'
             touch "$SESSION_STARTED"
             EOF
@@ -162,11 +168,19 @@
                 cursorPrefix=$(sed -n 's/^export XCURSOR_PATH="\([^$]*\)\$.*/\1/p' \
                   "$profile/etc/profile.d/hm-session-vars.sh")
                 test -n "$cursorPrefix"
-                env -i HOME="$HOME" USER=nixarchy-test PATH="$PATH" \
-                  SESSION_STARTED="$PWD/session-started" \
-                  EXPECTED_CURSOR_PATH="$cursorPrefix$cursorSuffix" "''${cursorEnv[@]}" \
-                  ${self.packages.${system}.nixarchy}/bin/nixarchy-session
-                test -f session-started
+                for data in /usr/share /inherited/share; do
+                  rm -f session-started
+                  dataEnv=()
+                  if test "$data" != /usr/share; then
+                    dataEnv=("XDG_DATA_DIRS=$data")
+                  fi
+                  env -i HOME="$HOME" USER=nixarchy-test PATH="$PATH" \
+                    SESSION_STARTED="$PWD/session-started" EXPECTED_DATA_DIR="$data" \
+                    EXPECTED_CURSOR_PATH="$cursorPrefix$cursorSuffix" \
+                    "''${cursorEnv[@]}" "''${dataEnv[@]}" \
+                    ${self.packages.${system}.nixarchy}/bin/nixarchy-session
+                  test -f session-started
+                done
               done
             done
             touch "$out"

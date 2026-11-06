@@ -7,7 +7,8 @@ fi
 # the compositor and its graphical-session services.
 stateProfile="${XDG_STATE_HOME:-$HOME/.local/state}/nix/profile"
 export PATH="/run/wrappers/bin:$HOME/.nix-profile/bin:$stateProfile/bin:/etc/profiles/per-user/$USER/bin:/run/system-manager/sw/bin:/run/current-system/sw/bin:$PATH"
-export XDG_DATA_DIRS="$HOME/.nix-profile/share:$stateProfile/share:/etc/profiles/per-user/$USER/share:/run/system-manager/sw/share:/run/current-system/sw/share:${XDG_DATA_DIRS:-/usr/local/share:/usr/share}"
+# Keep the host's data paths even when the inherited value only lists Nix profiles.
+export XDG_DATA_DIRS="$HOME/.nix-profile/share:$stateProfile/share:/etc/profiles/per-user/$USER/share:/run/system-manager/sw/share:/run/current-system/sw/share:${XDG_DATA_DIRS:+$XDG_DATA_DIRS:}/usr/local/share:/usr/share"
 for profile in "$HOME/.nix-profile" "$stateProfile" "/etc/profiles/per-user/$USER"; do
   if [[ -r "$profile/etc/profile.d/hm-session-vars.sh" ]]; then
     # Home Manager's profile may expand unset variables such as XCURSOR_PATH.
