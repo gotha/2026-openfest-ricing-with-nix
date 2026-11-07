@@ -106,6 +106,8 @@
           nixos-rebuild = pkgs.nixos-rebuild;
           theme = pkgs.callPackage ./packages/theme.nix { };
           sddm-theme = pkgs.callPackage ./packages/sddm { };
+          plasma = (pkgs.callPackage ./packages/plasma { }).desktop;
+          plasma-session = (pkgs.callPackage ./packages/plasma { }).session;
         }
       );
       formatter = forAllSystems (system: nixpkgs.legacyPackages.${system}.nixfmt);
@@ -158,6 +160,33 @@
             python3 ${./tests/theme.py} ${self.packages.${system}.theme} ${self.packages.${system}.sddm-theme}
             touch "$out"
           '';
+          plasma =
+            let
+              desktop = self.packages.${system}.plasma;
+            in
+            pkgs.runCommand "hannah-montana-plasma-check" { } ''
+              export HOME="$TMPDIR/home" XDG_RUNTIME_DIR="$TMPDIR/runtime"
+              mkdir -p "$HOME" "$XDG_RUNTIME_DIR"
+              chmod 700 "$XDG_RUNTIME_DIR"
+              export QT_QPA_PLATFORM=minimal
+              export QT_PLUGIN_PATH=${desktop}/${pkgs.kdePackages.qtbase.qtPluginPrefix}
+              export XDG_DATA_DIRS=${desktop}/share
+              export QML2_IMPORT_PATH=${desktop}/${pkgs.kdePackages.qtbase.qtQmlPrefix}
+              export QT_STYLE_OVERRIDE=Oxygen
+              export FONTCONFIG_FILE=${pkgs.makeFontsConf { fontDirectories = [ pkgs.dejavu_fonts ]; }}
+              ${desktop}/bin/kwin_wayland --version
+              ${desktop}/bin/plasmashell --version
+              test -e ${desktop}/share/systemd/user/plasma-workspace-wayland.target
+              test -e ${desktop}/share/systemd/user/plasma-kwin_wayland.service
+              test -e ${desktop}/share/systemd/user/plasma-powerdevil.service
+              test -e ${desktop}/${pkgs.kdePackages.qtbase.qtPluginPrefix}/plasma/applets/org.kde.plasma.taskmanager.so
+              test -e ${desktop}/share/dbus-1/services/org.kde.kded6.service
+              test -e ${desktop}/share/dbus-1/system-services/org.kde.powerdevil.backlighthelper.service
+              test -e ${desktop}/${pkgs.kdePackages.qtbase.qtPluginPrefix}/styles/oxygen6.so
+              find -L ${desktop}/share/systemd/user -type l -print > dangling-units
+              test ! -s dangling-units
+              touch "$out"
+            '';
           login-theme =
             pkgs.runCommand "hannah-montana-login-theme-check"
               {

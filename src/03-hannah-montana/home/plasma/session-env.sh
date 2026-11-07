@@ -1,4 +1,4 @@
-# Plasma sources this before starting the desktop and importing its environment.
+# Load the user profile before starting Plasma and importing its environment.
 if [ -r /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh ]; then
   unset __ETC_PROFILE_NIX_SOURCED
   . /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh
@@ -9,6 +9,7 @@ fi
 hannah_state_profile="${XDG_STATE_HOME:-$HOME/.local/state}/nix/profile"
 for hannah_profile in "$HOME/.nix-profile" "$hannah_state_profile"; do
   if [ -r "$hannah_profile/etc/profile.d/hm-session-vars.sh" ]; then
+    unset __HM_SESS_VARS_SOURCED
     # Home Manager's generated file can expand unset variables.
     case $- in *u*) hannah_restore_nounset=true; set +u ;; *) hannah_restore_nounset=false ;; esac
     . "$hannah_profile/etc/profile.d/hm-session-vars.sh"

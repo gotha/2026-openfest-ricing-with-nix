@@ -1,27 +1,21 @@
 {
-  lib,
   pkgs,
-  backend ? "nixos",
   ...
 }:
 {
-  home.packages =
-    with pkgs;
-    [
-      (callPackage ../../packages/theme.nix { })
-      dejavu_fonts
-      liberation_ttf
-      noto-fonts-color-emoji
-      kdePackages.oxygen-icons
-      kdePackages.breeze-icons
-      kdePackages.oxygen-sounds
-    ]
-    ++ lib.optionals (backend == "nixos") [
-      kdePackages.oxygen
-      kdePackages.oxygen.qt5
-      kdePackages.breeze
-      kdePackages.breeze-gtk
-    ];
+  home.packages = with pkgs; [
+    (callPackage ../../packages/theme.nix { })
+    dejavu_fonts
+    liberation_ttf
+    noto-fonts-color-emoji
+    kdePackages.oxygen-icons
+    kdePackages.breeze-icons
+    kdePackages.oxygen-sounds
+    kdePackages.oxygen
+    kdePackages.oxygen.qt5
+    kdePackages.breeze
+    kdePackages.breeze-gtk
+  ];
   fonts.fontconfig = {
     enable = true;
     defaultFonts = {

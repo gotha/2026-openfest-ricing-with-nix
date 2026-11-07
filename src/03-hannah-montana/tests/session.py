@@ -12,9 +12,9 @@ for profile_name in (".nix-profile", ".local/state/nix/profile"):
         profile = root / profile_name
         variables = profile / "etc/profile.d/hm-session-vars.sh"
         variables.parent.mkdir(parents=True)
-        variables.write_text('export XCURSOR_PATH="/test/icons${XCURSOR_PATH:+:}$XCURSOR_PATH"\nexport PROFILE_LOADED=yes\n')
-        env = dict(os.environ, HOME=str(root), USER="hannah-test", XDG_DATA_DIRS="/inherited/share")
-        for name in ("XCURSOR_PATH", "QT_PLUGIN_PATH", "QML2_IMPORT_PATH", "QML_IMPORT_PATH", "PROFILE_LOADED", "__HM_SESS_VARS_SOURCED"):
+        variables.write_text('test -z "${__HM_SESS_VARS_SOURCED:-}" || return 0\nexport XCURSOR_PATH="/test/icons${XCURSOR_PATH:+:}$XCURSOR_PATH"\nexport PROFILE_LOADED=yes\n')
+        env = dict(os.environ, HOME=str(root), USER="hannah-test", XDG_DATA_DIRS="/inherited/share", __HM_SESS_VARS_SOURCED="1")
+        for name in ("XCURSOR_PATH", "QT_PLUGIN_PATH", "QML2_IMPORT_PATH", "QML_IMPORT_PATH", "PROFILE_LOADED"):
             env.pop(name, None)
         result = subprocess.run(["bash", "-euc", '''
           . "$1"

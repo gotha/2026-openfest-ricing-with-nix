@@ -60,6 +60,7 @@ in
   services.udisks2.enable = true;
   services.upower.enable = true;
   programs.dconf.enable = true;
+  programs.kde-pim.enable = false;
   fonts.fontconfig.enable = true;
   boot.plymouth = lib.mkIf config.hannahMontana.plymouth.enable {
     enable = true;

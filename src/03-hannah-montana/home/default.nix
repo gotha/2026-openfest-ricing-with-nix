@@ -1,12 +1,9 @@
 {
-  backend ? "nixos",
-  ...
-}:
-{
   imports = [
     ./applications.nix
     ./theme
     ./plasma
+    ./plasma/session.nix
   ];
   home.stateVersion = "26.05";
   programs.home-manager.enable = true;
@@ -28,10 +25,5 @@
   xdg.userDirs = {
     enable = true;
     createDirectories = true;
-  };
-  xdg.configFile."plasma-workspace/env/10-hannah-montana-nix.sh" = {
-    enable = backend == "system-manager";
-    executable = true;
-    source = ./plasma/session-env.sh;
   };
 }
