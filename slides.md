@@ -99,6 +99,12 @@ cd src/01-anatomy-of-a-flake/
 nix run . -- "hey, OpenFest"
 ```
 
+::: notes
+nix-channel --add https://nixos.org/channels/nixos-26.05 nixpkgs
+nix-channel --update
+nix-shell -p git
+:::
+
 ---
 
 ## home-manager
