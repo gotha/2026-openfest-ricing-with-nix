@@ -69,7 +69,6 @@ in
               "applications:firefox.desktop"
               "applications:org.kde.dolphin.desktop"
               "applications:org.kde.konsole.desktop"
-              "applications:org.kde.amarok.desktop"
             ];
           }
           "org.kde.plasma.pager"
@@ -101,7 +100,6 @@ in
         "Alt+F2"
         "Alt+Space"
       ];
-      "org.kde.spectacle.desktop"._launch = "Print";
       ksmserver."Lock Session" = "Meta+L";
       kwin."Walk Through Windows" = "Alt+Tab";
     };

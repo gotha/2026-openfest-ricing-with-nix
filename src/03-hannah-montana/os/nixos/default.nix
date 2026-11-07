@@ -20,6 +20,15 @@ in
     ];
   };
   services.desktopManager.plasma6.enable = true;
+  # Plasma installs these applications by default; use the smaller shared selection.
+  environment.plasma6.excludePackages = with pkgs.kdePackages; [
+    ark
+    elisa
+    gwenview
+    okular
+    khelpcenter
+    spectacle
+  ];
   services.displayManager.sddm = lib.mkIf config.hannahMontana.loginTheme.enable {
     enable = lib.mkDefault (
       !(
@@ -51,7 +60,6 @@ in
   services.udisks2.enable = true;
   services.upower.enable = true;
   programs.dconf.enable = true;
-  programs.kde-pim.enable = config.hannahMontana.extras.enable;
   fonts.fontconfig.enable = true;
   boot.plymouth = lib.mkIf config.hannahMontana.plymouth.enable {
     enable = true;

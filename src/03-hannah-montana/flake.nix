@@ -126,10 +126,7 @@
           pkgs = nixpkgs.legacyPackages.${system};
           home = home-manager.lib.homeManagerConfiguration {
             inherit pkgs;
-            extraSpecialArgs = {
-              backend = "nixos";
-              extras = true;
-            };
+            extraSpecialArgs.backend = "nixos";
             modules = [
               self.homeManagerModules.default
               {
