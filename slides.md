@@ -115,6 +115,16 @@ lets rice gnome-terminal on Debian
 cd src/02-1-ricing-gnome-terminal
 nix run . -- switch --flake .#default --impure
 ```
+
+::: notes
+nix flake show --impure
+
+# pre-build the flake
+nix build --impure .#homeConfigurations.default.activationPackage
+# or
+nix run . -- build --flake .#default --impure
+:::
+
 ---
 
 ### home-manager + our first module
@@ -214,6 +224,7 @@ pick one - [Hannaha Montana Linux](./src/03-hannah-montana/) or [Nixarchy](./src
     - pizzie
 - nixos-generators
     - usb installer
+    - qemu target
 
 ---
 
