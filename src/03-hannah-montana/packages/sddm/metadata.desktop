@@ -1,0 +1,11 @@
+[SddmGreeterTheme]
+Name=Hannah Montana
+Description=Purple and pink login screen for the Hannah Montana desktop
+Author=OpenFest ricing with Nix
+License=MIT
+Type=sddm-theme
+Version=1.0
+MainScript=Main.qml
+Theme-Id=hannah-montana
+Theme-API=2.0
+QtVersion=6
