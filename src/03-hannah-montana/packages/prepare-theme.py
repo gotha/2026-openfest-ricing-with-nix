@@ -11,7 +11,8 @@ metadata = json.loads(metadata_path.read_text())
 metadata.pop("X-KPackage-Dependencies", None)
 metadata_path.write_text(json.dumps(metadata, indent=2, ensure_ascii=False) + "\n")
 defaults = theme / "contents/defaults"
-defaults.write_text(defaults.read_text().replace("Theme=org.hml", "Theme=com.decacagle.hml"))
+defaults.write_text(defaults.read_text().replace("Theme=org.hml", "Theme=com.decacagle.hml")
+                    .replace("ColorScheme=PrettyPink", "ColorScheme=HannahMontanaPink"))
 splash = theme / "contents/splash/Splash.qml"
 splash.write_text(splash.read_text().replace('color: "black"', 'color: "#4b1468"')
                   .replace('source: "images/plasma.svgz"', 'source: "images/hannah-montana.png"'))

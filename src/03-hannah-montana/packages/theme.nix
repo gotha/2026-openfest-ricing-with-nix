@@ -3,8 +3,12 @@
   stdenvNoCC,
   fetchFromGitLab,
   python3,
+  writeText,
   ...
 }:
+let
+  pinkColors = writeText "HannahMontanaPink.colors" (lib.generators.toINI { } (import ./colors.nix));
+in
 stdenvNoCC.mkDerivation {
   pname = "hannah-montana-theme";
   version = "2026-06-15";
@@ -24,6 +28,7 @@ stdenvNoCC.mkDerivation {
     cp -r --no-preserve=mode,ownership look-and-feel/com.decacagle.hml "$out/share/plasma/look-and-feel/"
     cp -r --no-preserve=mode,ownership plasma-style/hannah-montana-theme "$out/share/plasma/desktoptheme/"
     cp color-scheme/PrettyPink.colors "$out/share/color-schemes/"
+    cp ${pinkColors} "$out/share/color-schemes/HannahMontanaPink.colors"
     cp -r --no-preserve=mode,ownership icons/HannahMontana "$out/share/icons/"
     cp -r --no-preserve=mode,ownership wallpaper/HannahMontanaTheme "$out/share/wallpapers/"
     cp icons/HannahMontana/places/start-here-kde.png "$out/share/icons/hannah-montana-logo.png"

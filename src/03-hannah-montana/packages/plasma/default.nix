@@ -1,9 +1,10 @@
-{ pkgs, ... }:
+{ pkgs, lib, ... }:
 let
   kde = pkgs.kdePackages;
   desktop = pkgs.buildEnv {
     name = "hannah-montana-plasma";
     paths = with kde; [
+      (pkgs.callPackage ../theme.nix { })
       plasma-desktop
       plasma-workspace
       kwin
@@ -51,6 +52,7 @@ let
       breeze-gtk
       qtwayland
       qtsvg
+      (lib.getBin qttools)
       qtimageformats
       xdg-desktop-portal-kde
       pkgs.xdg-desktop-portal

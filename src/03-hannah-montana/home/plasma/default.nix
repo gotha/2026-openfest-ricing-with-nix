@@ -1,5 +1,6 @@
 {
   config,
+  lib,
   pkgs,
   ...
 }:
@@ -10,6 +11,28 @@ let
     family = "DejaVu Sans";
     pointSize = 10;
   };
+  startup = pkgs.writeShellScript "hannah-montana-plasma-startup" ''
+    export PATH=${
+      lib.makeBinPath [
+        pkgs.coreutils
+        pkgs.kdePackages.plasma-workspace
+        pkgs.kdePackages.qttools
+        pkgs.systemd
+      ]
+    }:"$PATH"
+    export XDG_DATA_DIRS="${theme}/share:''${XDG_DATA_DIRS:-/usr/local/share:/usr/share}"
+    restart_file="${config.xdg.dataHome}/plasma-manager/services_to_restart"
+    rm -f "$restart_file"
+    # Plasma Manager's helpers use Bash's ERR trap; Debian's /bin/sh is Dash.
+    for script in "${config.xdg.dataHome}/plasma-manager/scripts/"*.sh; do
+      if [ -x "$script" ]; then ${pkgs.bash}/bin/bash "$script"; fi
+    done
+    if [ -f "$restart_file" ]; then
+      while IFS= read -r service; do
+        systemctl --user restart "$service"
+      done < <(sort -u "$restart_file")
+    fi
+  '';
 in
 {
   programs.plasma = {
@@ -17,7 +40,7 @@ in
     overrideConfig = false;
     workspace = {
       theme = "hannah-montana-theme";
-      colorScheme = "PrettyPink";
+      colorScheme = "HannahMontanaPink";
       iconTheme = "HannahMontana";
       widgetStyle = "Oxygen";
       inherit wallpaper;
@@ -132,18 +155,26 @@ in
         Opacity = 1.0;
         Blur = false;
       };
-      Background.Color = "43,14,62";
-      Foreground.Color = "255,240,189";
-      Color0.Color = "43,14,62";
+      Background.Color = "45,23,53";
+      Foreground.Color = "255,234,245";
+      Color0.Color = "45,23,53";
       Color1.Color = "240,100,135";
       Color2.Color = "166,214,140";
       Color3.Color = "255,212,90";
-      Color4.Color = "147,181,255";
-      Color5.Color = "231,133,238";
+      Color4.Color = "183,165,255";
+      Color5.Color = "239,146,198";
       Color6.Color = "141,217,217";
-      Color7.Color = "255,240,189";
+      Color7.Color = "255,234,245";
     };
   };
+  xdg.dataFile."wallpapers/hannah-montana.png".source = wallpaper;
+  xdg.configFile."autostart/plasma-manager-autostart.desktop".text = lib.mkForce ''
+    [Desktop Entry]
+    Type=Application
+    Name=Hannah Montana Plasma appearance
+    Exec=${startup}
+    X-KDE-autostart-condition=ksmserver
+  '';
   home.file."Desktop/Home.desktop".text = ''
     [Desktop Entry]
     Type=Link
