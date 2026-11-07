@@ -1,14 +1,19 @@
 {
-  description =
-    "Development environment with pandoc and reveal.js presentation builder";
+  description = "Development environment with pandoc and reveal.js presentation builder";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     flake-utils.url = "github:numtide/flake-utils";
   };
 
-  outputs = { self, nixpkgs, flake-utils }:
-    flake-utils.lib.eachDefaultSystem (system:
+  outputs =
+    {
+      self,
+      nixpkgs,
+      flake-utils,
+    }:
+    flake-utils.lib.eachDefaultSystem (
+      system:
       let
         pkgs = nixpkgs.legacyPackages.${system};
 
@@ -20,7 +25,7 @@
         };
 
         presentation = pkgs.stdenv.mkDerivation {
-          name = "YOUR_PRESENTATION_NAME";
+          name = "The Art of Ricing with Nix: Declarative, Repeatable Desktop Aesthetics for the *nix OSs";
           src = ./.;
 
           buildInputs = with pkgs; [ pandoc ];
@@ -60,17 +65,21 @@
           '';
         };
 
-      in {
+      in
+      {
         packages.default = presentation;
 
         devShells.default = pkgs.mkShell {
-          buildInputs = with pkgs; [ pandoc python312 ];
+          buildInputs = with pkgs; [
+            pandoc
+            python312
+          ];
 
           shellHook = ''
             echo "Development environment with pandoc ready!"
             echo "Pandoc version: $(pandoc --version | head -n1)"
           '';
         };
-      });
+      }
+    );
 }
-
