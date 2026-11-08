@@ -12,6 +12,8 @@ nerd
 
 volunteer
 
+member of snugbg.org
+
 
 ---
 
@@ -169,6 +171,9 @@ nix run . -- switch --flake .#default --sudo --nix-option pure-eval false
 
 
 ::: notes
+# pre-build
+nix build --impure path:.#systemConfigs.default
+
 # nixos
 sudo env NIXOS_CONFIG=/absolute/path/to/configuration.nix \
   nix run .#nixos-rebuild -- switch --flake .#default --impure
